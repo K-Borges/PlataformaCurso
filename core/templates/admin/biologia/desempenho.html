@@ -13,7 +13,9 @@
             <h2 class="text-3xl font-bold text-slate-800">Estatísticas de Evolução</h2>
             <p class="text-emerald-600 font-semibold italic">Acompanhamento de progresso da turma</p>
         </div>
-        <a href="painel.html" class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold hover:bg-slate-700 transition">Voltar ao Painel</a>
+        <a href="{% url 'admin_bio_painel' %}" class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold hover:bg-slate-700 transition">
+            <i class="fas fa-arrow-left mr-2"></i> Voltar ao Painel
+        </a>
     </header>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -56,7 +58,15 @@
                     pointBackgroundColor: 'rgb(16, 185, 129)'
                 }]
             },
-            options: { scales: { r: { suggestMin: 0, suggestMax: 100 } } }
+            options: { 
+                scales: { 
+                    r: { 
+                        suggestMin: 0, 
+                        suggestMax: 100,
+                        ticks: { display: false }
+                    } 
+                } 
+            }
         });
     </script>
 </body>
