@@ -3,91 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acesso - Foco ENEM</title>
+    <title>Login - Foco ENEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-slate-950 h-screen flex items-center justify-center p-4 font-sans overflow-hidden">
-    
-    <div class="absolute w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -top-20 -left-20"></div>
-    <div class="absolute w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -bottom-20 -right-20"></div>
-
-    <div class="relative w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
         
-        <div class="space-y-6">
-            <div class="mb-10 text-center lg:text-left">
-                <h1 class="text-5xl font-black text-white mb-2 tracking-tighter">FOCO <span class="text-emerald-400">ENEM</span></h1>
-                <p class="text-slate-400 text-lg">Escolha seu portal de acesso</p>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-group:focus-within label {
+            color: #10b981;
+            transform: translateY(-4px);
+        }
+
+        .role-card.active {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+
+        .subject-select:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        #subject-container {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+
+    <!-- Orbes de Luz Decorativos -->
+    <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+        
+        <!-- Coluna de Branding -->
+        <div class="hidden lg:block space-y-8">
+            <div class="space-y-4">
+                
+                <h1 class="text-7xl font-black tracking-tighter leading-[0.9]">
+                    Plat <br> <span class="text-emerald-500">Ensino</span>
+                </h1>
+                <p class="text-slate-400 text-xl max-w-md leading-relaxed">
+                    A plataforma definitiva para quem busca a aprovação com inteligência e métricas em tempo real.
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div onclick="document.getElementById('role-indicator').innerText='Portal do Aluno'; document.getElementById('role-indicator').className='text-blue-400 font-bold'" 
-                    class="group bg-slate-900/50 border border-slate-800 p-6 rounded-3xl cursor-pointer hover:border-blue-500 transition-all duration-500">
-                    <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                        <i class="fas fa-user-graduate text-xl"></i>
-                    </div>
-                    <h3 class="text-white font-bold text-lg">Sou Aluno</h3>
-                    <p class="text-slate-500 text-xs">Acessar aulas e simulados</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-6 rounded-3xl bg-white/5 border border-white/10">
+                    <span class="block text-3xl font-black text-white">15k+</span>
+                    <span class="text-slate-500 text-sm">Alunos Ativos</span>
                 </div>
-
-                <div onclick="document.getElementById('role-indicator').innerText='Portal do Professor'; document.getElementById('role-indicator').className='text-emerald-400 font-bold'"
-                    class="group bg-slate-900/50 border border-slate-800 p-6 rounded-3xl cursor-pointer hover:border-emerald-500 transition-all duration-500">
-                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                        <i class="fas fa-chalkboard-teacher text-xl"></i>
-                    </div>
-                    <h3 class="text-white font-bold text-lg">Sou Professor</h3>
-                    <p class="text-slate-500 text-xs">Gestão e estatísticas</p>
+                <div class="p-6 rounded-3xl bg-white/5 border border-white/10">
+                    <span class="block text-3xl font-black text-white">98%</span>
+                    <span class="text-slate-500 text-sm">Taxa de Aprovação</span>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white/10 backdrop-blur-xl border border-white/10 p-10 rounded-[3rem] shadow-2xl relative">
-            <div class="mb-8">
-                <p id="role-indicator" class="text-slate-400 font-bold">Acesse sua conta</p>
-                <h2 class="text-2xl font-bold text-white">Bem-vindo de volta!</h2>
-            </div>
-
-            {% if erro %}
-            <div class="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-2xl mb-6 text-sm font-bold flex items-center">
-                <i class="fas fa-exclamation-circle mr-2"></i>
-                {{ erro }}
-            </div>
-            {% endif %}
-
-            <form method="POST" action="{% url 'login' %}" class="space-y-5">
-                {% csrf_token %}
+        <!-- Coluna do Formulário -->
+        <div class="flex justify-center">
+            <div class="glass-card w-full max-w-md p-10 rounded-[3.5rem] shadow-3xl">
                 
-                <div>
-                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2 ml-1">Identificação</label>
-                    <div class="relative">
-                        <i class="fas fa-at absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                        <input type="text" name="username" required
-                            class="w-full pl-12 pr-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl outline-none focus:border-emerald-500 transition-all text-white placeholder-slate-600"
-                            placeholder="Usuário ou E-mail">
-                    </div>
+                <div class="mb-8">
+                    <h2 id="form-title" class="text-3xl font-black mb-2">Acesso</h2>
+                    <p class="text-slate-400 font-medium">Selecione seu perfil e entre na sua conta.</p>
                 </div>
 
-                <div>
-                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2 ml-1">Senha de Acesso</label>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                        <input type="password" name="password" required
-                            class="w-full pl-12 pr-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl outline-none focus:border-emerald-500 transition-all text-white placeholder-slate-600"
-                            placeholder="••••••••">
-                    </div>
+                <!-- Seletor de Perfil -->
+                <div class="grid grid-cols-2 gap-3 mb-8">
+                    <button type="button" onclick="selectRole('student')" id="role-student" class="role-card active flex flex-col items-center gap-2 p-4 border border-white/10 rounded-2xl transition-all">
+                        <i class="fas fa-user-graduate text-xl"></i>
+                        <span class="text-xs font-bold uppercase tracking-wider">Aluno</span>
+                    </button>
+                    <button type="button" onclick="selectRole('teacher')" id="role-teacher" class="role-card flex flex-col items-center gap-2 p-4 border border-white/10 rounded-2xl transition-all">
+                        <i class="fas fa-chalkboard-teacher text-xl"></i>
+                        <span class="text-xs font-bold uppercase tracking-wider">Professor</span>
+                    </button>
                 </div>
 
-                <button type="submit" 
-                    class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-2xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-95 uppercase tracking-tighter">
-                    Entrar no Sistema
-                </button>
-            </form>
+                <form action="{% url 'login' %}" method="POST" class="space-y-5">
+                    {% csrf_token %}
+                    <input type="hidden" name="role" id="role-input" value="student">
+                    
+                    <!-- Campo de Matéria (Aparece apenas para Professor) -->
+                    <div id="subject-container" class="hidden opacity-0 scale-95 transition-all">
+                        <div class="input-group space-y-2">
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-emerald-500 ml-1">Disciplina de Atuação</label>
+                            <div class="relative">
+                                <i class="fas fa-book-open absolute left-5 top-1/2 -translate-y-1/2 text-emerald-500/50"></i>
+                                <select name="subject" id="subject-select"
+                                    class="w-full bg-slate-900/80 border border-emerald-500/30 rounded-2xl py-4 pl-12 pr-4 outline-none appearance-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-white cursor-pointer">
+                                    <option value="" disabled selected>Selecione sua matéria...</option>
+                                    <option value="biologia">Biologia</option>
+                                    <option value="matematica">Matemática</option>
+                                    <option value="fisica">Física</option>
+                                    <option value="quimica">Química</option>
+                                    <option value="historia">História</option>
+                                    <option value="geografia">Geografia</option>
+                                    <option value="portugues">Língua Portuguesa</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="mt-8 text-center">
-                <a href="#" class="text-slate-500 text-xs hover:text-white transition">Esqueceu sua senha?</a>
+                    <div class="input-group space-y-2">
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 transition-all ml-1">E-mail ou Usuário</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-600"></i>
+                            <input type="text" name="username" required
+                                class="w-full bg-slate-900/50 border border-white/5 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all text-white placeholder-slate-600"
+                                placeholder="exemplo@email.com">
+                        </div>
+                    </div>
+
+                    <div class="input-group space-y-2">
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 transition-all ml-1">Sua Senha</label>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-slate-600"></i>
+                            <input type="password" name="password" required
+                                class="w-full bg-slate-900/50 border border-white/5 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all text-white placeholder-slate-600"
+                                placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between px-1">
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500/20">
+                            <span class="text-xs text-slate-500 group-hover:text-slate-300 transition-colors">Lembrar-me</span>
+                        </label>
+                        <a href="#" class="text-xs text-emerald-500 hover:text-emerald-400 font-bold transition-colors">Esqueceu a senha?</a>
+                    </div>
+
+                    <button type="submit" class="w-full py-5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl shadow-xl shadow-emerald-500/20 transition-all active:scale-95 uppercase tracking-tighter mt-2">
+                        Entrar na Plataforma
+                    </button>
+                </form>
+
+                <div class="mt-8 text-center">
+                    <p class="text-slate-500 text-sm">
+                        Não tem conta? 
+                        <a href="#" class="text-white font-bold hover:underline underline-offset-4 decoration-emerald-500">Crie agora gratuitamente</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 
+    <script>
+        function selectRole(role) {
+            const roleInput = document.getElementById('role-input');
+            const subjectContainer = document.getElementById('subject-container');
+            const subjectSelect = document.getElementById('subject-select');
+            const studentBtn = document.getElementById('role-student');
+            const teacherBtn = document.getElementById('role-teacher');
+
+            roleInput.value = role;
+
+            if (role === 'teacher') {
+                teacherBtn.classList.add('active');
+                studentBtn.classList.remove('active');
+                
+                // Mostra o campo de matéria
+                subjectContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    subjectContainer.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+                subjectSelect.setAttribute('required', 'required');
+            } else {
+                studentBtn.classList.add('active');
+                teacherBtn.classList.remove('active');
+                
+                // Esconde o campo de matéria
+                subjectContainer.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    subjectContainer.classList.add('hidden');
+                }, 400);
+                subjectSelect.removeAttribute('required');
+            }
+        }
+    </script>
 </body>
 </html>
