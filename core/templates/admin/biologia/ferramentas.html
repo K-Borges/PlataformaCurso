@@ -12,7 +12,9 @@
             <h2 class="text-3xl font-bold text-slate-800">Atlas Digital</h2>
             <p class="text-emerald-600 font-semibold">Laboratórios e Simuladores de Biologia</p>
         </div>
-        <a href="painel.html" class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold hover:bg-slate-700 transition">Voltar ao Painel</a>
+        <a href="{% url 'admin_bio_painel' %}" class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold hover:bg-slate-700 transition">
+            <i class="fas fa-arrow-left mr-2"></i> Voltar ao Painel
+        </a>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
