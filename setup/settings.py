@@ -116,3 +116,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Define para onde o @login_required deve enviar o usuário
+LOGIN_URL = 'login'
+
+# Define para onde o Django redireciona após o login bem-sucedido (caso não haja um ?next=)
+LOGIN_REDIRECT_URL = 'home'
+
+# Define para onde o Django redireciona após o logout
+LOGOUT_REDIRECT_URL = 'login'

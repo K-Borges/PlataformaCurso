@@ -1,208 +1,425 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal do Aluno - PlatEnsino</title>
+    <title>PlatEnsino - Portal do Aluno</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f7ff',
+                            100: '#ebf0fe',
+                            200: '#ced9fd',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#1e1b4b',
+                        }
+                    }
+                }
+            }
+        }
+
+        // Inicialização do Tema (antes do render para evitar flash branco)
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <style>
-        /* Estilização da barra de rolagem para manter a estética clean */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
         .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scroll::-webkit-scrollbar-thumb { background: #334155; }
+        
+        .page-content { display: none; }
+        .page-content.active { display: block; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-link.active {
+            background-color: rgba(99, 102, 241, 0.15);
+            border-left: 4px solid #facc15;
+            color: white;
+        }
+        
+        .dark .nav-link.active {
+            background-color: rgba(24acc15, 0.1);
+        }
+
+        #profile-dropdown {
+            display: none;
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Toggle Theme Animation */
+        .sun-icon { transform: rotate(0deg); transition: 0.5s ease; }
+        .moon-icon { transform: rotate(0deg); transition: 0.5s ease; }
+        .dark .sun-icon { transform: rotate(90deg); opacity: 0; }
+        .dark .moon-icon { transform: rotate(0deg); opacity: 1; }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-900">
+<body class="bg-slate-50 dark:bg-[#0b0f1a] text-slate-900 dark:text-slate-100">
 
     <div class="flex h-screen overflow-hidden">
         
-        <aside class="w-64 bg-indigo-950 text-white p-6 hidden lg:flex flex-col shadow-2xl">
-            <div class="mb-10 px-2">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-brand-900 dark:bg-slate-950 text-white p-6 hidden lg:flex flex-col shadow-2xl z-20 border-r border-transparent dark:border-slate-800">
+            <div class="mb-10 px-2 flex items-center justify-between">
                 <h1 class="text-2xl font-black tracking-tighter">PLAT<span class="text-yellow-400">ENSINO</span></h1>
-                <p class="text-[10px] text-indigo-300 uppercase tracking-[0.2em] font-bold">Plataforma de Estudos</p>
             </div>
             
             <nav class="space-y-2 flex-1">
-                <a href="{% url 'home' %}" class="flex items-center space-x-3 p-3 bg-indigo-800/50 border-l-4 border-yellow-400 rounded-r-xl transition-all">
-                    <i class="fas fa-th-large w-5"></i> <span class="font-medium">Dashboard</span>
-                </a>
-                <a href="{% url 'aulas' %}" class="flex items-center space-x-3 p-3 text-indigo-200 hover:bg-indigo-800/30 hover:text-white rounded-xl transition-all group">
-                    <i class="fas fa-play-circle w-5 group-hover:text-yellow-400"></i> <span>Aulas ao Vivo</span>
-                </a>
-                <a href="{% url 'materiais' %}" class="flex items-center space-x-3 p-3 text-indigo-200 hover:bg-indigo-800/30 hover:text-white rounded-xl transition-all group">
-                    <i class="fas fa-folder-open w-5 group-hover:text-yellow-400"></i> <span>Materiais</span>
-                </a>
-                <a href="{% url 'simulados' %}" class="flex items-center space-x-3 p-3 text-indigo-200 hover:bg-indigo-800/30 hover:text-white rounded-xl transition-all group">
-                    <i class="fas fa-check-double w-5 group-hover:text-yellow-400"></i> <span>Simulados</span>
-                </a>
+                <button onclick="showPage('dashboard', this)" class="nav-link active w-full flex items-center space-x-3 p-4 text-indigo-100 rounded-r-xl transition-all group text-left">
+                    <i class="fas fa-th-large w-5"></i> 
+                    <span class="font-bold">Dashboard</span>
+                </button>
+                
+                <button onclick="showPage('aulas', this)" class="nav-link w-full flex items-center space-x-3 p-4 text-indigo-200 hover:bg-white/5 rounded-xl transition-all group text-left">
+                    <i class="fas fa-play-circle w-5 group-hover:text-yellow-400"></i> 
+                    <span class="font-bold">Aulas ao Vivo</span>
+                </button>
+                
+                <button onclick="showPage('materiais', this)" class="nav-link w-full flex items-center space-x-3 p-4 text-indigo-200 hover:bg-white/5 rounded-xl transition-all group text-left">
+                    <i class="fas fa-folder-open w-5 group-hover:text-yellow-400"></i> 
+                    <span class="font-bold">Materiais</span>
+                </button>
+                
+                <button onclick="showPage('simulados', this)" class="nav-link w-full flex items-center space-x-3 p-4 text-indigo-200 hover:bg-white/5 rounded-xl transition-all group text-left">
+                    <i class="fas fa-check-double w-5 group-hover:text-yellow-400"></i> 
+                    <span class="font-bold">Simulados</span>
+                </button>
             </nav>
 
-            <div class="pt-6 border-t border-indigo-900">
-                <a href="{% url 'login' %}" class="flex items-center space-x-3 p-3 text-indigo-300 hover:text-red-400 transition-colors">
-                    <i class="fas fa-sign-out-alt"></i> <span class="text-sm font-bold uppercase">Sair</span>
-                </a>
+            <!-- Bottom Actions -->
+            <div class="pt-6 border-t border-white/10 flex flex-col space-y-2">
+                <!-- Estilização melhorada do Toggle -->
+                <button id="theme-toggle" class="group flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-all">
+                    <div class="flex items-center space-x-3">
+                        <div class="relative w-5 h-5 flex items-center justify-center">
+                            <i class="fas fa-moon absolute moon-icon hidden dark:block text-yellow-400"></i>
+                            <i class="fas fa-sun absolute sun-icon dark:hidden text-yellow-500"></i>
+                        </div>
+                        <span class="font-bold text-xs uppercase tracking-widest text-indigo-300 group-hover:text-white">Tema</span>
+                    </div>
+                    <div class="w-10 h-5 bg-slate-700 rounded-full relative p-1 flex items-center transition-colors dark:bg-indigo-600">
+                        <div class="w-3 h-3 bg-white rounded-full transition-all transform dark:translate-x-5"></div>
+                    </div>
+                </button>
+                
+                <button onclick="logout()" class="flex items-center space-x-3 p-3 text-indigo-300 hover:text-red-400 transition-colors font-bold text-xs uppercase tracking-widest text-left">
+                    <i class="fas fa-sign-out-alt"></i> <span>Sair</span>
+                </button>
             </div>
         </aside>
         
-        <main class="flex-1 flex flex-col h-full overflow-hidden">
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-[#0b0f1a]">
             
-            <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center z-10">
-                <h2 class="text-xl font-bold text-slate-800">Início</h2>
+            <!-- Header -->
+            <header class="bg-white dark:bg-[#0b0f1a]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-8 py-4 flex justify-between items-center z-30 transition-colors">
+                <div>
+                    <h2 id="page-title" class="text-xl font-extrabold text-slate-800 dark:text-white uppercase tracking-tight">Dashboard</h2>
+                </div>
                 
-                <div class="flex items-center space-x-6">
-                    <div class="hidden sm:flex flex-col text-right">
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Plano Ativo</span>
-                        <span class="text-sm font-black text-indigo-600">PREMIUM</span>
-                    </div>
+                <div class="relative">
+                    <button id="profileButton" onclick="toggleDropdown()" class="flex items-center space-x-4 focus:outline-none group">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-[10px] font-black text-indigo-600 dark:text-yellow-400 uppercase tracking-widest">Premium</p>
+                            <p class="text-sm font-bold text-slate-700 dark:text-slate-200">Gabriel Silva</p>
+                        </div>
+                        <div class="w-11 h-11 bg-gradient-to-tr from-indigo-600 to-brand-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-none transition-transform group-hover:scale-105 border-2 border-white dark:border-slate-800">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                    </button>
 
-                    <div class="relative">
-                        <button id="profileBtn" class="flex items-center space-x-3 group focus:outline-none">
-                            <div class="w-10 h-10 bg-indigo-100 border-2 border-indigo-500 rounded-full flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
-                                <i class="fas fa-user-graduate"></i>
-                            </div>
-                        </button>
-
-                        <div id="profileMenu" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden transform origin-top-right transition-all">
-                            <div class="p-5 bg-slate-50 border-b border-slate-100">
-                                <p class="text-xs font-bold text-slate-400 uppercase">Estudante</p>
-                                <p class="text-base font-black text-slate-800 leading-none">João Silva</p>
-                            </div>
-                            <div class="p-2">
-                                <a href="#" class="flex items-center space-x-3 p-3 text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition">
-                                    <i class="fas fa-user-circle"></i> <span>Meu Perfil</span>
-                                </a>
-                                <a href="{% url 'login' %}" class="flex items-center space-x-3 p-3 text-sm text-red-500 hover:bg-red-50 rounded-xl transition font-bold">
-                                    <i class="fas fa-power-off"></i> <span>Encerrar Sessão</span>
-                                </a>
-                            </div>
+                    <!-- Dropdown -->
+                    <div id="profile-dropdown" class="absolute right-0 mt-4 w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Sua Conta</p>
+                        </div>
+                        <div class="p-2 space-y-1">
+                            <a href="#" class="flex items-center space-x-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-bold text-sm">
+                                <i class="fas fa-user-circle text-indigo-500"></i>
+                                <span>Perfil e Configurações</span>
+                            </a>
+                            <a href="#" class="flex items-center space-x-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-bold text-sm">
+                                <i class="fas fa-medal text-yellow-500"></i>
+                                <span>Minhas Conquistas</span>
+                            </a>
+                        </div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-950">
+                            <button onclick="logout()" class="w-full flex items-center space-x-3 p-3 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors text-left font-bold text-sm text-red-600">
+                                <i class="fas fa-power-off"></i>
+                                <span>Encerrar Sessão</span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </header>
 
-            <div class="flex-1 overflow-y-auto p-8 custom-scroll">
+            <!-- Scrollable Viewport -->
+            <div class="flex-1 overflow-y-auto p-6 md:p-8 custom-scroll">
                 
-                <div class="mb-10">
-                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">Olá, Futuro Universitário! 👋</h3>
-                    <p class="text-slate-500 mt-1 font-medium">Veja o que preparamos para o seu cronograma de hoje.</p>
-                </div>
-
-                <div class="grid grid-cols-12 gap-6">
-                    
-                    <div class="col-span-12 lg:col-span-8 space-y-6">
-                        
-                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
-                            
-                            <div class="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                                <div>
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-red-100 text-red-600 text-[10px] font-black uppercase tracking-widest mb-4">
-                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></span> Ao Vivo em 45m
-                                    </span>
-                                    <h4 class="text-2xl font-black text-slate-800 leading-tight">Redação Nota 1000:<br>Estrutura de Argumentação</h4>
-                                    <p class="text-slate-500 mt-2 flex items-center text-sm">
-                                        <i class="fas fa-chalkboard-teacher mr-2 text-indigo-500"></i> Prof. Túlio Arantes
-                                    </p>
+                <!-- SEÇÃO 1: DASHBOARD -->
+                <section id="page-dashboard" class="page-content active">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-8">
+                            <!-- Hero Card -->
+                            <div class="bg-indigo-600 dark:bg-indigo-700 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-indigo-200 dark:shadow-none">
+                                <div class="relative z-10">
+                                    <h3 class="text-4xl font-black mb-2 tracking-tight">Fala, Gabriel! 🚀</h3>
+                                    <p class="text-indigo-100 text-lg max-w-md opacity-90">Sua jornada hoje te levará longe. Você está a apenas 3 aulas de bater sua meta!</p>
+                                    <button class="mt-8 bg-yellow-400 text-indigo-950 px-8 py-4 rounded-2xl font-black hover:bg-yellow-300 transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg">Continuar de onde parei</button>
                                 </div>
-                                <button class="w-full md:w-auto bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 flex items-center justify-center space-x-3">
-                                    <span>ENTRAR NA SALA</span>
-                                    <i class="fas fa-external-link-alt text-xs"></i>
-                                </button>
+                                <i class="fas fa-graduation-cap absolute -right-6 -bottom-6 text-[12rem] text-white/10 -rotate-12"></i>
                             </div>
-                        </div>
 
-                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-                            <div class="flex justify-between items-center mb-6">
-                                <h4 class="text-lg font-black text-slate-800 uppercase tracking-tighter">Cronograma Sugerido</h4>
-                                <span class="text-xs font-bold text-indigo-600 cursor-pointer">VER TODOS</span>
-                            </div>
-                            
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-indigo-100 transition-all cursor-pointer">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
-                                            <i class="fas fa-square-root-alt"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-slate-700 leading-tight">Matemática: Probabilidade</p>
-                                            <p class="text-xs text-slate-400 font-medium">Revisão de conceitos básicos</p>
-                                        </div>
+                            <!-- Stats -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div class="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-4 text-xl">
+                                        <i class="fas fa-fire"></i>
                                     </div>
-                                    <i class="fas fa-check-circle text-emerald-500 text-xl"></i>
+                                    <h4 class="text-slate-400 dark:text-slate-500 font-bold text-xs uppercase tracking-widest mb-1">Ofensiva de Estudos</h4>
+                                    <p class="text-3xl font-black dark:text-white">12 Dias</p>
                                 </div>
-
-                                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-indigo-100 transition-all cursor-pointer">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl">
-                                            <i class="fas fa-flask"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-slate-700 leading-tight">Química: Estequiometria</p>
-                                            <p class="text-xs text-slate-400 font-medium">Cálculos de massa e volume</p>
-                                        </div>
+                                <div class="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                                    <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center mb-4 text-xl">
+                                        <i class="fas fa-chart-line"></i>
                                     </div>
-                                    <button class="text-indigo-600 font-black text-[10px] uppercase hover:underline tracking-widest">Iniciar</button>
+                                    <h4 class="text-slate-400 dark:text-slate-500 font-bold text-xs uppercase tracking-widest mb-1">Média Geral</h4>
+                                    <p class="text-3xl font-black dark:text-white">845.2</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-span-12 lg:col-span-4 space-y-6">
                         
-                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col items-center text-center">
-                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Meta Semanal</h4>
-                            <div class="relative flex items-center justify-center mb-6">
-                                <svg class="w-40 h-40 transform -rotate-90">
-                                    <circle class="text-slate-100" stroke-width="10" stroke="currentColor" fill="transparent" r="70" cx="80" cy="80"/>
-                                    <circle class="text-indigo-600" stroke-width="10" stroke-dasharray="440" stroke-dashoffset="140" stroke-linecap="round" stroke="currentColor" fill="transparent" r="70" cx="80" cy="80"/>
-                                </svg>
-                                <div class="absolute flex flex-col">
-                                    <span class="text-4xl font-black text-slate-800">68%</span>
-                                </div>
-                            </div>
-                            <p class="text-sm font-bold text-slate-500 leading-relaxed">Faltam apenas <span class="text-indigo-600 font-black">4 metas</span> para completar seu objetivo!</p>
-                        </div>
-
-                        <div class="bg-indigo-900 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
-                            <i class="fas fa-quote-right absolute top-4 right-4 text-indigo-800 text-4xl"></i>
-                            <h4 class="text-lg font-black mb-6 flex items-center uppercase tracking-tighter">
-                                <i class="fas fa-bullhorn mr-3 text-yellow-400"></i> Mural
+                        <!-- Side Content -->
+                        <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-800 shadow-sm">
+                            <h4 class="text-xl font-black mb-8 dark:text-white flex items-center">
+                                <span class="w-1.5 h-6 bg-yellow-400 rounded-full mr-3"></span>
+                                Agenda de Hoje
                             </h4>
-                            <div class="space-y-4">
-                                <div class="p-4 bg-white/10 rounded-2xl border border-white/10">
-                                    <p class="text-[10px] font-black text-yellow-400 uppercase tracking-widest mb-1">Geral</p>
-                                    <p class="text-sm font-medium leading-snug">Simulado Nacional no próximo sábado às 14h!</p>
+                            <div class="space-y-8">
+                                <div class="relative pl-8 before:content-[''] before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-slate-100 dark:before:bg-slate-800 before:rounded-full">
+                                    <div class="absolute -left-1.5 top-0 w-4 h-4 rounded-full bg-red-500 ring-4 ring-white dark:ring-slate-900"></div>
+                                    <p class="font-black text-sm dark:text-white">Aula ao Vivo: Bioética</p>
+                                    <p class="text-xs text-slate-500 font-medium mt-1">19:00 - Prof. Helena</p>
                                 </div>
-                                <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                                    <p class="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-1">Física</p>
-                                    <p class="text-sm font-medium leading-snug">Material de óptica atualizado.</p>
+                                <div class="relative pl-8 before:content-[''] before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-slate-100 dark:before:bg-slate-800 before:rounded-full">
+                                    <div class="absolute -left-1.5 top-0 w-4 h-4 rounded-full bg-indigo-500 ring-4 ring-white dark:ring-slate-900"></div>
+                                    <p class="font-black text-sm dark:text-white">Revisão de Matemática</p>
+                                    <p class="text-xs text-slate-500 font-medium mt-1">Concluir até às 23:59</p>
                                 </div>
                             </div>
+                            
+                            <div class="mt-12 p-6 bg-slate-50 dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800">
+                                <p class="text-xs font-black text-slate-400 uppercase mb-4 text-center">Progresso do Mês</p>
+                                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-600 h-full w-[65%] rounded-full"></div>
+                                </div>
+                                <p class="text-[10px] text-center mt-3 font-bold text-slate-500">65% da meta concluída</p>
+                            </div>
                         </div>
-
                     </div>
-                </div>
+                </section>
+
+                <!-- Outras seções mantendo a coerência visual do tema -->
+                <section id="page-aulas" class="page-content">
+                    <div class="mb-10">
+                        <h3 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Aulas ao Vivo</h3>
+                        <p class="text-slate-500 font-medium">Interaja com professores e colegas em tempo real.</p>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800">
+                        <div class="aspect-video w-full flex items-center justify-center bg-slate-950 relative group cursor-pointer">
+                            <div class="text-center z-10">
+                                <div class="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse group-hover:scale-110 transition-transform shadow-xl shadow-indigo-500/20">
+                                    <i class="fas fa-play text-white text-2xl ml-1"></i>
+                                </div>
+                                <p class="text-white font-black tracking-widest uppercase text-[10px]">Clique para entrar na sala</p>
+                            </div>
+                            <div class="absolute top-6 left-6 bg-red-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black flex items-center space-x-2">
+                                <span class="w-2 h-2 bg-white rounded-full animate-ping"></span>
+                                <span>AO VIVO</span>
+                            </div>
+                        </div>
+                        <div class="p-8 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div>
+                                <h4 class="text-xl font-black dark:text-white">Física III: Circuitos Complexos</h4>
+                                <p class="text-slate-500 text-sm font-medium">Prof. Ricardo • 854 alunos online</p>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button class="px-6 py-3 border border-slate-200 dark:border-slate-700 rounded-2xl font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Ver Material</button>
+                                <button class="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none">Entrar Agora</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- SEÇÃO 3: MATERIAIS -->
+                <section id="page-materiais" class="page-content">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                        <div>
+                            <h3 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Biblioteca Acadêmica</h3>
+                            <p class="text-slate-500 font-medium">Materiais didáticos otimizados para seu estudo.</p>
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" placeholder="O que você quer estudar?" class="bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-[1.5rem] pl-14 pr-6 py-4 text-sm focus:border-indigo-500 outline-none w-full md:w-80 transition-all shadow-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Card Material -->
+                        <div class="group bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 hover:border-indigo-500 transition-all shadow-sm hover:shadow-xl dark:hover:shadow-indigo-500/5">
+                            <div class="w-16 h-16 bg-red-100 dark:bg-red-500/10 text-red-600 rounded-2xl flex items-center justify-center mb-8 group-hover:rotate-3 transition-transform">
+                                <i class="fas fa-file-pdf text-3xl"></i>
+                            </div>
+                            <h4 class="font-black text-xl mb-1 dark:text-white">Era Vargas & Populismo</h4>
+                            <p class="text-slate-500 text-sm font-medium mb-8">História do Brasil • PDF • 14MB</p>
+                            <button class="w-full py-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-black text-xs group-hover:bg-indigo-600 group-hover:text-white transition-all uppercase tracking-widest">
+                                <i class="fas fa-download mr-2"></i> Baixar Agora
+                            </button>
+                        </div>
+                        
+                        <div class="group bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 hover:border-indigo-500 transition-all shadow-sm hover:shadow-xl dark:hover:shadow-indigo-500/5">
+                            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center mb-8 group-hover:rotate-3 transition-transform">
+                                <i class="fas fa-map text-3xl"></i>
+                            </div>
+                            <h4 class="font-black text-xl mb-1 dark:text-white">Mapa Mental: Genética</h4>
+                            <p class="text-slate-500 text-sm font-medium mb-8">Biologia II • Imagem • 2MB</p>
+                            <button class="w-full py-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-black text-xs group-hover:bg-indigo-600 group-hover:text-white transition-all uppercase tracking-widest">
+                                <i class="fas fa-eye mr-2"></i> Visualizar
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SEÇÃO 4: SIMULADOS -->
+                <section id="page-simulados" class="page-content">
+                    <div class="mb-10">
+                        <h3 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Centro de Simulados</h3>
+                        <p class="text-slate-500 font-medium">Treine com o tempo real de prova e receba feedback instantâneo.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <button class="group p-8 bg-white dark:bg-slate-900 border-2 border-transparent hover:border-emerald-500 rounded-[2.5rem] transition-all text-left shadow-sm hover:shadow-lg">
+                            <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-microscope text-2xl"></i>
+                            </div>
+                            <h4 class="text-xl font-black leading-tight mb-2 dark:text-white">Natureza</h4>
+                            <p class="text-slate-500 text-sm font-medium">45 Questões • 2h 30m</p>
+                            <div class="mt-8 flex items-center text-emerald-600 font-black text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform">
+                                Iniciar Prova <i class="fas fa-chevron-right ml-2 text-[10px]"></i>
+                            </div>
+                        </button>
+                        
+                        <button class="group p-8 bg-white dark:bg-slate-900 border-2 border-transparent hover:border-indigo-500 rounded-[2.5rem] transition-all text-left shadow-sm hover:shadow-lg">
+                            <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-calculator text-2xl"></i>
+                            </div>
+                            <h4 class="text-xl font-black leading-tight mb-2 dark:text-white">Matemática</h4>
+                            <p class="text-slate-500 text-sm font-medium">45 Questões • 3h 00m</p>
+                            <div class="mt-8 flex items-center text-indigo-600 font-black text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform">
+                                Iniciar Prova <i class="fas fa-chevron-right ml-2 text-[10px]"></i>
+                            </div>
+                        </button>
+                    </div>
+                </section>
+
             </div>
         </main>
     </div>
 
     <script>
-        const profileBtn = document.getElementById('profileBtn');
-        const profileMenu = document.getElementById('profileMenu');
+        // Função para troca de páginas (SPA)
+        function showPage(pageId, btnElement) {
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
 
-        // Toggle do Menu de Perfil
-        profileBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            profileMenu.classList.toggle('hidden');
+            const targetPage = document.getElementById('page-' + pageId);
+            if(targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            const pageTitles = {
+                'dashboard': 'Dashboard de Estudos',
+                'aulas': 'Aulas ao Vivo',
+                'materiais': 'Biblioteca Acadêmica',
+                'simulados': 'Centro de Simulados'
+            };
+            document.getElementById('page-title').innerText = pageTitles[pageId] || 'Portal do Aluno';
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Se clicado via botões da sidebar
+            if(btnElement) {
+                btnElement.classList.add('active');
+            }
+        }
+
+        // Lógica de Dark Mode Aprimorada
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        
+        themeToggleBtn.addEventListener('click', () => {
+            // Alterna a classe no elemento raiz
+            document.documentElement.classList.toggle('dark');
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            
+            // Feedback tátil ou sonoro poderia ser adicionado aqui
         });
 
-        // Fechar menu ao clicar fora dele
-        window.addEventListener('click', () => {
-            if (!profileMenu.classList.contains('hidden')) {
-                profileMenu.classList.add('hidden');
+        // Dropdown do Perfil
+        function toggleDropdown() {
+            const dropdown = document.getElementById('profile-dropdown');
+            const isVisible = dropdown.style.display === 'block';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+        }
+
+        // Logout
+        function logout() {
+            // Simulação de logout
+            const confirmLogout = window.confirm("Deseja realmente sair do portal?");
+            if(confirmLogout) {
+                window.location.href = "login.html";
+            }
+        }
+
+        // Fecha menus ao clicar fora
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('profile-dropdown');
+            const btn = document.getElementById('profileButton');
+            if (dropdown && btn && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
             }
         });
     </script>
