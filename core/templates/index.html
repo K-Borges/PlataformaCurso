@@ -405,12 +405,11 @@
             dropdown.style.display = isVisible ? 'none' : 'block';
         }
 
-        // Logout
+        // Logout real usando a rota Django
         function logout() {
-            // Simulação de logout
             const confirmLogout = window.confirm("Deseja realmente sair do portal?");
-            if(confirmLogout) {
-                window.location.href = "login.html";
+            if (confirmLogout) {
+                window.location.href = "{% url 'logout' %}";
             }
         }
 

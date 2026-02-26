@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Física - Foco ENEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-50 font-sans">
@@ -19,19 +20,22 @@
                 </a>
             </div>
 
-            <nav class="space-y-4 flex-1">
-                <a href="{% url 'admin_fis_painel' %}" class="flex items-center space-x-3 p-3 bg-blue-600 rounded-lg shadow-lg">
+            <nav class="space-y-2 flex-1 text-sm">
+                <button type="button" data-page="dashboard" class="fis-nav-item w-full flex items-center space-x-3 p-3 bg-blue-600 rounded-lg shadow-lg text-left">
                     <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
-                </a>
-                <a href="{% url 'admin_fis_ferramentas' %}" class="flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition">
+                </button>
+                <button type="button" data-page="ferramentas" class="fis-nav-item w-full flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition text-left">
                     <i class="fas fa-flask"></i> <span>Laboratório Virtual</span>
-                </a>
-                <a href="{% url 'admin_fis_desempenho' %}" class="flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition">
+                </button>
+                <button type="button" data-page="desempenho" class="fis-nav-item w-full flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition text-left">
                     <i class="fas fa-chart-line"></i> <span>Desempenho da Turma</span>
-                </a>
+                </button>
+                <button type="button" data-page="simulados" class="fis-nav-item w-full flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition border-t border-slate-700 pt-4 text-yellow-400 text-left mt-4">
+                    <i class="fas fa-clipboard-list"></i> <span>Gerador de Simulados</span>
+                </button>
             </nav>
 
-            <a href="{% url 'login' %}" class="flex items-center space-x-3 p-3 hover:bg-red-900/50 text-red-400 rounded-lg transition">
+            <a href="{% url 'logout' %}" class="flex items-center space-x-3 p-3 hover:bg-red-900/50 text-red-400 rounded-lg transition">
                 <i class="fas fa-sign-out-alt"></i> <span>Sair</span>
             </a>
         </aside>
@@ -55,18 +59,166 @@
                 </div>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border-t-4 border-blue-500">
-                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
-                        <i class="fas fa-video mr-3 text-blue-500"></i> Gestão de Vídeos
-                    </h3>
-                    <div class="space-y-4">
-                        <input type="text" placeholder="Link da Aula ao Vivo" class="w-full p-3 bg-gray-50 border border-gray-100 rounded-xl outline-none text-sm focus:border-blue-500">
-                        <button class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">Atualizar Conteúdo</button>
+            <!-- DASHBOARD -->
+            <section id="fis-page-dashboard" class="fis-page space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border-t-4 border-blue-500">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
+                            <i class="fas fa-video mr-3 text-blue-500"></i> Gestão de Vídeos
+                        </h3>
+                        <div class="space-y-4">
+                            <input type="text" placeholder="Link da Aula ao Vivo" class="w-full p-3 bg-gray-50 border border-gray-100 rounded-xl outline-none text-sm focus:border-blue-500">
+                            <button class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">Atualizar Conteúdo</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <!-- LABORATÓRIO VIRTUAL / FERRAMENTAS -->
+            <section id="fis-page-ferramentas" class="fis-page hidden space-y-8">
+                <div class="flex items-center justify-between mb-4 text-slate-800">
+                    <div>
+                        <h2 class="text-2xl font-bold">Laboratório Virtual</h2>
+                        <p class="text-blue-600 font-semibold">Simuladores PhET e Circuitos</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-blue-100 group hover:border-blue-500 transition-all">
+                        <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3 class="font-bold text-xl mb-2">Kit de Eletricidade</h3>
+                        <p class="text-gray-500 text-sm mb-6">Monte circuitos em série e paralelo para demonstrar a Lei de Ohm.</p>
+                        <a href="https://phet.colorado.edu/sims/html/circuit-construction-kit-dc/latest/circuit-construction-kit-dc_all.html" target="_blank" class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 text-sm uppercase">Iniciar Simulação</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DESEMPENHO -->
+            <section id="fis-page-desempenho" class="fis-page hidden space-y-8">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Mapeamento de Lacunas</h2>
+                        <p class="text-blue-600 font-semibold italic">Análise de competências em Física</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-slate-700 mb-6 uppercase text-xs tracking-widest text-center">Domínio por Área Temática</h3>
+                        <canvas id="chartFis"></canvas>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-slate-700 mb-6 uppercase text-xs tracking-widest">Atenção Prioritária</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-red-50 rounded-2xl border border-red-100">
+                                <div>
+                                    <p class="text-sm font-bold text-red-700">Eletrodinâmica</p>
+                                    <p class="text-[10px] text-red-500 uppercase">Ponto Crítico: Leis de Kirchhoff</p>
+                                </div>
+                                <span class="text-red-600 font-black">32%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                                <div>
+                                    <p class="text-sm font-bold text-blue-700">Cinemática</p>
+                                    <p class="text-[10px] text-blue-500 uppercase">Domínio Estável</p>
+                                </div>
+                                <span class="text-blue-600 font-black">88%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SIMULADOS -->
+            <section id="fis-page-simulados" class="fis-page hidden space-y-8">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Gerador de Simulados</h2>
+                        <p class="text-blue-600 font-semibold">Monte simulados focados em Física.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <p class="text-slate-500 text-sm mb-4">
+                        Área reservada para configurar simulados de Física por tema, nível de dificuldade e tempo de prova.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-2xl border border-dashed border-slate-200 text-center text-slate-400 text-sm">
+                            Selecionar quantidade de questões por área (mecânica, eletricidade, etc.).
+                        </div>
+                        <div class="p-4 rounded-2xl border border-dashed border-slate-200 text-center text-slate-400 text-sm">
+                            Escolher banco de questões e pesos.
+                        </div>
+                        <div class="p-4 rounded-2xl border border-dashed border-slate-200 text-center text-slate-400 text-sm">
+                            Gerar link e gabarito automático.
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
+
+    <script>
+        (function () {
+            const initialPage = "{{ active_page|default:'dashboard' }}";
+
+            function setActivePage(page) {
+                document.querySelectorAll('.fis-page').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                const target = document.getElementById('fis-page-' + page);
+                if (target) {
+                    target.classList.remove('hidden');
+                }
+
+                document.querySelectorAll('.fis-nav-item').forEach(btn => {
+                    if (btn.getAttribute('data-page') === page) {
+                        btn.classList.add('bg-blue-600', 'text-white', 'shadow-lg');
+                    } else {
+                        btn.classList.remove('bg-blue-600', 'text-white', 'shadow-lg');
+                    }
+                });
+            }
+
+            document.querySelectorAll('.fis-nav-item').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const page = this.getAttribute('data-page');
+                    setActivePage(page);
+                });
+            });
+
+            setActivePage(initialPage);
+
+            const chartCanvas = document.getElementById('chartFis');
+            if (chartCanvas && window.Chart) {
+                const ctx = chartCanvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Mecânica', 'Termologia', 'Óptica', 'Ondulatória', 'Eletricidade', 'Magnetismo'],
+                        datasets: [{
+                            label: 'Média de Acertos (%)',
+                            data: [88, 70, 55, 62, 32, 45],
+                            fill: true,
+                            backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                            borderColor: 'rgb(37, 99, 235)',
+                            pointBackgroundColor: 'rgb(37, 99, 235)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                suggestedMin: 0,
+                                suggestedMax: 100
+                            }
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

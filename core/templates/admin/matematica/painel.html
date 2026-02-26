@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Matemática - Foco ENEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-50 font-sans">
@@ -19,19 +20,22 @@
                 </a>
             </div>
 
-            <nav class="space-y-4 flex-1">
-                <a href="{% url 'admin_mat_painel' %}" class="flex items-center space-x-3 p-3 bg-amber-600 rounded-lg shadow-lg">
+            <nav class="space-y-2 flex-1 text-sm">
+                <button type="button" data-page="dashboard" class="mat-nav-item w-full flex items-center space-x-3 p-3 bg-amber-600 rounded-lg shadow-lg text-left">
                     <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
-                </a>
-                <a href="{% url 'admin_mat_ferramentas' %}" class="flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition">
+                </button>
+                <button type="button" data-page="ferramentas" class="mat-nav-item w-full flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition text-left">
                     <i class="fas fa-square-root-alt"></i> <span>Laboratório Digital</span>
-                </a>
-                <a href="{% url 'admin_mat_desempenho' %}" class="flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition">
+                </button>
+                <button type="button" data-page="desempenho" class="mat-nav-item w-full flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition text-left">
                     <i class="fas fa-chart-bar"></i> <span>Desempenho</span>
-                </a>
+                </button>
+                <button type="button" data-page="simulados" class="mat-nav-item w-full flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-lg transition border-t border-slate-700 pt-4 text-yellow-400 text-left mt-4">
+                    <i class="fas fa-clipboard-list"></i> <span>Gerador de Simulados</span>
+                </button>
             </nav>
 
-            <a href="{% url 'login' %}" class="flex items-center space-x-3 p-3 hover:bg-red-900/50 text-red-400 rounded-lg transition">
+            <a href="{% url 'logout' %}" class="flex items-center space-x-3 p-3 hover:bg-red-900/50 text-red-400 rounded-lg transition">
                 <i class="fas fa-sign-out-alt"></i> <span>Sair</span>
             </a>
         </aside>
@@ -55,18 +59,175 @@
                 </div>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border-t-4 border-amber-500">
-                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
-                        <i class="fas fa-video mr-3 text-amber-500"></i> Gravações das Aulas
-                    </h3>
-                    <div class="space-y-4">
-                        <input type="text" placeholder="URL da Playlist de Resolução" class="w-full p-3 bg-gray-50 border border-gray-100 rounded-xl outline-none text-sm focus:border-amber-500">
-                        <button class="w-full bg-amber-600 text-white font-bold py-3 rounded-xl hover:bg-amber-700 transition">Atualizar Portal</button>
+            <!-- DASHBOARD -->
+            <section id="mat-page-dashboard" class="mat-page space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border-t-4 border-amber-500">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
+                            <i class="fas fa-video mr-3 text-amber-500"></i> Gravações das Aulas
+                        </h3>
+                        <div class="space-y-4">
+                            <input type="text" placeholder="URL da Playlist de Resolução" class="w-full p-3 bg-gray-50 border border-gray-100 rounded-xl outline-none text-sm focus:border-amber-500">
+                            <button class="w-full bg-amber-600 text-white font-bold py-3 rounded-xl hover:bg-amber-700 transition">Atualizar Portal</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <!-- LABORATÓRIO DIGITAL / FERRAMENTAS -->
+            <section id="mat-page-ferramentas" class="mat-page hidden space-y-8">
+                <div class="flex items-center justify-between mb-4 text-slate-800">
+                    <div>
+                        <h2 class="text-2xl font-bold">Calculadoras e Gráficos</h2>
+                        <p class="text-amber-600 font-semibold">Exploração Visual de Funções</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-amber-100 group hover:border-amber-500 transition-all">
+                        <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:bg-amber-600 group-hover:text-white transition-all">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">GeoGebra Graphing</h3>
+                        <p class="text-gray-500 text-sm mb-6">Plote funções, equações e construções geométricas em tempo real.</p>
+                        <a href="https://www.geogebra.org/graphing" target="_blank" class="block w-full text-center bg-amber-600 text-white py-3 rounded-xl font-bold hover:bg-amber-700 uppercase text-xs">Abrir Calculadora</a>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 group hover:border-slate-800 transition-all">
+                        <div class="w-14 h-14 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:bg-slate-800 group-hover:text-white transition-all">
+                            <i class="fas fa-divide"></i>
+                        </div>
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">Wolfram Alpha</h3>
+                        <p class="text-gray-500 text-sm mb-6">Motor de conhecimento computacional para resolução passo a passo.</p>
+                        <a href="https://www.wolframalpha.com/" target="_blank" class="block w-full text-center bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-900 uppercase text-xs">Consultar Wolfram</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DESEMPENHO -->
+            <section id="mat-page-desempenho" class="mat-page hidden space-y-8">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Análise de Proficiência</h2>
+                        <p class="text-amber-600 font-semibold italic">Mapeamento de competências matemáticas</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-slate-700 mb-6 uppercase text-xs tracking-widest text-center">Domínio por Eixo Temático</h3>
+                        <canvas id="chartMat"></canvas>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-slate-700 mb-6 uppercase text-xs tracking-widest">Tópicos Críticos</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-red-50 rounded-2xl border border-red-100">
+                                <div>
+                                    <p class="text-sm font-bold text-red-700">Análise Combinatória</p>
+                                    <p class="text-[10px] text-red-500 uppercase">Dificuldade: Permutações</p>
+                                </div>
+                                <span class="text-red-600 font-black">28%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                                <div>
+                                    <p class="text-sm font-bold text-amber-700">Funções de 2º Grau</p>
+                                    <p class="text-[10px] text-amber-500 uppercase">Domínio em evolução</p>
+                                </div>
+                                <span class="text-amber-600 font-black">62%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SIMULADOS -->
+            <section id="mat-page-simulados" class="mat-page hidden space-y-8">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Gerador de Simulados</h2>
+                        <p class="text-amber-600 font-semibold">Monte simulados focados em Matemática.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <p class="text-slate-500 text-sm mb-4">
+                        Área reservada para configurar simulados de Matemática por tema, nível de dificuldade e tempo de prova.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-2xl border border-dashed border-slate-200 text-center text-slate-400 text-sm">
+                            Selecionar quantidade de questões por eixo (álgebra, geometria, etc.).
+                        </div>
+                        <div class="p-4 rounded-2xl border border-dashed border-slate-200 text-center text-slate-400 text-sm">
+                            Escolher banco de questões e pesos.
+                        </div>
+                        <div class="p-4 rounded-2xl border border-dashed border-slate-200 text-center text-slate-400 text-sm">
+                            Gerar link e gabarito automático.
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
+
+    <script>
+        (function () {
+            const initialPage = "{{ active_page|default:'dashboard' }}";
+
+            function setActivePage(page) {
+                document.querySelectorAll('.mat-page').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                const target = document.getElementById('mat-page-' + page);
+                if (target) {
+                    target.classList.remove('hidden');
+                }
+
+                document.querySelectorAll('.mat-nav-item').forEach(btn => {
+                    if (btn.getAttribute('data-page') === page) {
+                        btn.classList.add('bg-amber-600', 'text-white', 'shadow-lg');
+                    } else {
+                        btn.classList.remove('bg-amber-600', 'text-white', 'shadow-lg');
+                    }
+                });
+            }
+
+            document.querySelectorAll('.mat-nav-item').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const page = this.getAttribute('data-page');
+                    setActivePage(page);
+                });
+            });
+
+            setActivePage(initialPage);
+
+            const chartCanvas = document.getElementById('chartMat');
+            if (chartCanvas && window.Chart) {
+                const ctx = chartCanvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Álgebra', 'Geometria', 'Estatística', 'Trigonometria', 'Aritmética', 'Combinatória'],
+                        datasets: [{
+                            label: 'Nível da Turma',
+                            data: [75, 58, 90, 45, 82, 28],
+                            fill: true,
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            borderColor: 'rgb(245, 158, 11)',
+                            pointBackgroundColor: 'rgb(245, 158, 11)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                suggestedMin: 0,
+                                suggestedMax: 100
+                            }
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
