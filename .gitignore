@@ -1,14 +1,12 @@
-Ambientes Virtuais
-
 venv/
 .env
 
-Banco de Dados SQLite
-
 *.sqlite3
-
-Arquivos de Sistema
 
 .DS_Store
 pycache/
 *.pyc
+
+media/listas
+media/*
+media/
