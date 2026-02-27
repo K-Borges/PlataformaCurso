@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
 
+=======
+from django.conf import settings
+from django.conf.urls.static import static
+>>>>>>> origin/main
 from django.contrib import admin
 from django.urls import path
+
 from core import views
 
 urlpatterns = [
@@ -18,6 +24,9 @@ urlpatterns = [
 
     # --- PORTAL DO ALUNO (SPA) ---
     path('', views.home, name='home'),
+
+    # --- URL Dinamica de UPLOAD ---
+    path('upload/<str:materia>/', views.upload_lista, name='upload_lista'),
 
     # --- PROFESSOR: BIOLOGIA ---
     path('professor/biologia/painel/', views.admin_bio_painel, name='admin_bio_painel'),
@@ -39,4 +48,6 @@ urlpatterns = [
     path('professor/historia/painel/', views.admin_hist_painel, name='admin_hist_painel'),
     path('professor/geografia/painel/', views.admin_geo_painel, name='admin_geo_painel'),
     path('professor/portugues/painel/', views.admin_port_painel, name='admin_port_painel'),
-]
+
+    # teste para arquivos em desenvolvimento (pdfs aleatórios para teste)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

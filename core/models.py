@@ -1,6 +1,7 @@
 from django.db import models
 
 
+<<<<<<< HEAD
 class SubjectChoices(models.TextChoices):
     BIOLOGIA = "biologia", "Biologia"
     FISICA = "fisica", "Física"
@@ -45,3 +46,15 @@ class Notice(models.Model):
     def __str__(self) -> str:
         return f"[{self.get_subject_display()}] {self.message[:40]}"
 
+=======
+# Create your models here.
+class ListaExercicios(models.Model):
+    titulo = models.CharField(max_length=255)
+    arquivo = models.FileField(upload_to="listas/")
+    materia = models.CharField(max_length=100)
+    professor = models.CharField(max_length=100)
+    data_upload = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titulo
+>>>>>>> origin/main

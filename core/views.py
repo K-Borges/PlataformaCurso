@@ -1,93 +1,112 @@
-from django.shortcuts import render, redirect
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.conf import settings
+from django.shortcuts import redirect, render
+
+from .models import ListaExercicios
+
+# TODO Colocar Login Required depois que as features estiverem prontas
 
 # --- PÁGINA DO ALUNO (SPA) ---
-@login_required
 def home(request):
     """
     Página principal que contém toda a interface do aluno (Aulas, Materiais, Simulados)
     carregada dinamicamente via JavaScript.
     """
-    return render(request, 'index.html')
+    return render(request, 'home.html')
 
 
 # --- ÁREA DO PROFESSOR: BIOLOGIA ---
-@login_required
 def admin_bio_painel(request):
     return render(request, 'admin/biologia/painel.html', {"active_page": "dashboard"})
 
 
-@login_required
 def admin_bio_desempenho(request):
     # Usa o mesmo template SPA, iniciando na aba de desempenho
     return render(request, 'admin/biologia/painel.html', {"active_page": "desempenho"})
 
 
-@login_required
 def admin_bio_ferramentas(request):
     # Usa o mesmo template SPA, iniciando na aba de ferramentas/atlas digital
     return render(request, 'admin/biologia/painel.html', {"active_page": "ferramentas"})
 
 
 # --- ÁREA DO PROFESSOR: FÍSICA ---
-@login_required
 def admin_fis_painel(request):
     return render(request, 'admin/fisica/painel.html', {"active_page": "dashboard"})
 
 
-@login_required
 def admin_fis_desempenho(request):
     # Usa o mesmo template SPA, iniciando em desempenho
     return render(request, 'admin/fisica/painel.html', {"active_page": "desempenho"})
 
 
-@login_required
 def admin_fis_ferramentas(request):
     # Usa o mesmo template SPA, iniciando em ferramentas
     return render(request, 'admin/fisica/painel.html', {"active_page": "ferramentas"})
 
 
 # --- ÁREA DO PROFESSOR: MATEMÁTICA ---
-@login_required
 def admin_mat_painel(request):
     return render(request, 'admin/matematica/painel.html', {"active_page": "dashboard"})
 
 
-@login_required
 def admin_mat_desempenho(request):
     # Usa o mesmo template SPA, iniciando em desempenho
     return render(request, 'admin/matematica/painel.html', {"active_page": "desempenho"})
 
 
-@login_required
 def admin_mat_ferramentas(request):
     # Usa o mesmo template SPA, iniciando em ferramentas
     return render(request, 'admin/matematica/painel.html', {"active_page": "ferramentas"})
 
 
 # --- ÁREA DO PROFESSOR: OUTRAS MATÉRIAS ---
-@login_required
 def admin_quim_painel(request):
     return render(request, 'admin/quimica/painel.html')
 
 
-@login_required
 def admin_hist_painel(request):
     return render(request, 'admin/historia/painel.html')
 
 
-@login_required
 def admin_geo_painel(request):
     return render(request, 'admin/geografia/painel.html')
 
 
-@login_required
 def admin_port_painel(request):
     return render(request, 'admin/portugues/painel.html')
 
+# Sistema de Upload de Listas
+def upload_lista(request, materia):
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        arquivo = request.FILES.get('arquivo')
+
+        if not arquivo or not arquivo.name.lower().endswith('.pdf'):
+            messages.error(request, 'Apenas PDFs são permitidos')
+        else:
+            ListaExercicios.objects.create(
+                titulo=titulo,
+                arquivo=arquivo,
+                materia=materia,
+                professor=request.user.username if request.user.is_authenticated else "anon"
+            )
+            messages.success(request, f'Upload de {materia} realizado com sucesso!')
+
+        # Redirect por matéria
+        if materia == 'biologia':
+            return redirect('admin_bio_painel')
+        if materia == 'fisica':
+            return redirect('admin_fis_painel')
+        if materia == 'matematica':
+            return redirect('admin_mat_painel')
+
+        return redirect('home')
+
+    return redirect('home')
 
 # --- SISTEMA DE LOGIN ---
 def login_view(request):
