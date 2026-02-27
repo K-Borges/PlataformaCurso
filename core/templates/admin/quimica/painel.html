@@ -6,11 +6,53 @@
     <title>Painel Química - Foco ENEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f7ff',
+                            100: '#ebf0fe',
+                            200: '#ced9fd',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#1e1b4b',
+                        }
+                    }
+                }
+            }
+        }
+
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scroll::-webkit-scrollbar-thumb { background: #334155; }
+        .nav-item-active { background-color: rgba(79,70,229,0.12); border-left: 4px solid #facc15; color: white; }
+
+        /* Toggle Theme Animation */
+        .sun-icon { transform: rotate(0deg); transition: 0.5s ease; }
+        .moon-icon { transform: rotate(0deg); transition: 0.5s ease; }
+        .dark .sun-icon { transform: rotate(90deg); opacity: 0; }
+        .dark .moon-icon { transform: rotate(0deg); opacity: 1; }
+
+        /* Força texto claro no modo escuro (prioriza legibilidade) */
+        .dark [class*='text-'] { color: #f8fafc !important; }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-slate-50 dark:bg-[#0b0f1a] text-slate-900 dark:text-slate-100">
     <div class="flex h-screen">
-        <aside class="w-64 bg-slate-900 text-white p-6 hidden md:block flex flex-col">
-            <h1 class="text-2xl font-bold mb-10 text-center text-rose-400">AdminQUIM</h1>
+        <aside class="w-64 bg-brand-900 dark:bg-slate-950 text-white p-6 hidden md:block flex flex-col">
+            <h1 class="text-2xl font-bold mb-10 text-center text-yellow-400">AdminQUIM</h1>
 
             <div class="mb-8 border-b border-slate-700 pb-4">
                 <a href="{% url 'home' %}" class="flex items-center justify-center space-x-2 w-full p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-yellow-400 hover:text-slate-900 transition-all duration-300 group">
@@ -21,21 +63,36 @@
 
             <nav class="space-y-3 flex-1 text-sm">
                 <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Navegação</span>
-                <button type="button" class="w-full flex items-center space-x-3 p-3 bg-rose-600 rounded-lg shadow-lg text-left">
+                <button type="button" class="w-full flex items-center space-x-3 p-3 bg-brand-600 rounded-lg shadow-lg text-left">
                     <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
                 </button>
             </nav>
 
-            <a href="{% url 'logout' %}" class="flex items-center space-x-3 p-3 hover:bg-red-900/50 text-red-400 rounded-lg transition mt-4">
-                <i class="fas fa-sign-out-alt"></i> <span>Sair</span>
-            </a>
+            <div class="pt-6 border-t border-white/10 flex flex-col space-y-2 mt-4">
+                <button id="theme-toggle" class="group flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-all">
+                    <div class="flex items-center space-x-3">
+                        <div class="relative w-5 h-5 flex items-center justify-center">
+                            <i class="fas fa-moon absolute moon-icon hidden dark:block text-yellow-400"></i>
+                            <i class="fas fa-sun absolute sun-icon dark:hidden text-yellow-500"></i>
+                        </div>
+                        <span class="font-bold text-xs uppercase tracking-widest text-indigo-300 group-hover:text-white">Tema</span>
+                    </div>
+                    <div class="w-10 h-5 bg-slate-700 rounded-full relative p-1 flex items-center transition-colors dark:bg-indigo-600">
+                        <div class="w-3 h-3 bg-white rounded-full transition-all transform dark:translate-x-5"></div>
+                    </div>
+                </button>
+
+                <a href="{% url 'logout' %}" class="flex items-center space-x-3 p-3 hover:bg-red-900/50 text-red-400 rounded-lg transition mt-4">
+                    <i class="fas fa-sign-out-alt"></i> <span>Sair</span>
+                </a>
+            </div>
         </aside>
 
         <main class="flex-1 overflow-y-auto p-8">
             <header class="flex justify-between items-center mb-8 border-b pb-6">
                 <div>
                     <h2 class="text-3xl font-bold text-slate-800">Área do Professor</h2>
-                    <p class="text-rose-600 font-semibold flex items-center">
+                    <p class="text-brand-600 font-semibold flex items-center">
                         <i class="fas fa-vial mr-2"></i> Disciplina: Química
                     </p>
                 </div>
@@ -49,6 +106,18 @@
             </section>
         </main>
     </div>
+                <script>
+                    (function () {
+                        const themeToggleBtn = document.getElementById('theme-toggle');
+                        if (themeToggleBtn) {
+                            themeToggleBtn.addEventListener('click', () => {
+                                document.documentElement.classList.toggle('dark');
+                                const isDark = document.documentElement.classList.contains('dark');
+                                localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+                            });
+                        }
+                    })();
+                </script>
 </body>
 </html>
 

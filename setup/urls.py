@@ -1,3 +1,8 @@
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
+
+
 from django.contrib import admin
 from django.urls import path
 from core import views
