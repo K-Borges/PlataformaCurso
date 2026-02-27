@@ -28,4 +28,10 @@ urlpatterns = [
     path('professor/matematica/painel/', views.admin_mat_painel, name='admin_mat_painel'),
     path('professor/matematica/desempenho/', views.admin_mat_desempenho, name='admin_mat_desempenho'),
     path('professor/matematica/ferramentas/', views.admin_mat_ferramentas, name='admin_mat_ferramentas'),
+
+    # --- PROFESSOR: OUTRAS MATÉRIAS ---
+    path('professor/quimica/painel/', views.admin_quim_painel, name='admin_quim_painel'),
+    path('professor/historia/painel/', views.admin_hist_painel, name='admin_hist_painel'),
+    path('professor/geografia/painel/', views.admin_geo_painel, name='admin_geo_painel'),
+    path('professor/portugues/painel/', views.admin_port_painel, name='admin_port_painel'),
 ]
